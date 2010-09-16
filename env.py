@@ -3,7 +3,10 @@
 import logging
 import random
 from fifo import FIFO
+from lru import LRU
 from alg import Algorithm
+
+LOGFILE="run.log"
 
 #logging.basicConfig(level=logging.DEBUG,
 logging.basicConfig(level=logging.INFO,
@@ -66,6 +69,8 @@ def run_test(algs, n=6, m=20, k=4):
 #    logging.debug("Using seed %d" % (seed))
     logging.debug("Using test case %s" % (", ".join([str(x) for x in testcase])))
 
+    result = []
+
     for alg in algs:
         logging.debug("Run alg=%s, n=%d, m=%d, k=%d" % (alg, n, m, k))
 
@@ -81,24 +86,45 @@ def run_test(algs, n=6, m=20, k=4):
                 pfnum += 1
                 state[place] = c
 
-        if optimum != 0:
-            C = float(pfnum) / optimum
-        elif pfnum == 0:
-            C = 1
-        else:
-            C = 1e30000
-        print "%s: %d (C=%f)" % (alg, pfnum, C)
-    print "OPT: %d" % (optimum)
+#        if optimum != 0:
+#            C = float(pfnum) / optimum
+#        elif pfnum == 0:
+#            C = 1
+#        else:
+#            C = 1e30000
+
+        assert pfnum >= optimum
+
+        result.append(pfnum)
+
+#        print "%s: %d (C=%f)" % (alg, pfnum, C)
+#    print "OPT: %d" % (optimum)
+
+    result.append(optimum)
+    return result
 
 def run_iteration(num, algs, n=6, m=20, k=4):
+
+    results = []
+
     for i in range(num):
         for alg in algs:
-            run_test(algs, n, m, k)
+            run = run_test(algs, n, m, k)
+            results.append(run)
+
+    write_plot(LOGFILE, results, algs)
+
+def write_plot(filename, results, algs):
+    with open(filename, "w") as f:
+        print >>f, "num", " ".join([x.__str__() for x in algs] + ["OPT"])
+        for num, run in enumerate(results):
+            print >>f, num+1, " ".join([str(x) for x in run])
 
 #seed = 1234
 #random.seed(seed)
 
 
 fifo_alg = FIFO()
-run_iteration(10, [fifo_alg])
+lru_alg = LRU()
+run_iteration(100, [fifo_alg, lru_alg], 20, 1000, 10)
 
