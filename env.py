@@ -7,6 +7,7 @@ from lru import LRU
 from incstats import IncrementalStats
 
 LOGFILE="run.log"
+LOGFILE2="run3d.log"
 
 #logging.basicConfig(level=logging.DEBUG,
 logging.basicConfig(level=logging.INFO,
@@ -86,13 +87,6 @@ def run_test(algs, n=6, m=20, k=4):
                 pfnum += 1
                 state[place] = c
 
-#        if optimum != 0:
-#            C = float(pfnum) / optimum
-#        elif pfnum == 0:
-#            C = 1
-#        else:
-#            C = 1e30000
-
         assert pfnum >= optimum
 
         result.append(pfnum)
@@ -121,11 +115,7 @@ def run_iteration(num, algs, n=6, m=20, k=4):
                     alg_stats[a].add(C)
                     run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
             results.append(run)
-#            print results
-#            print avg(results, 0)
-#            quit()
-
-    write_plot(LOGFILE, results, algs)
+    return results
 
 def write_plot(filename, results, algs):
     with open(filename, "w") as f:
@@ -139,5 +129,19 @@ def write_plot(filename, results, algs):
 
 fifo_alg = FIFO()
 lru_alg = LRU()
-run_iteration(100, [fifo_alg, lru_alg], 10, 100, 4)
+algs = [fifo_alg, lru_alg]
+#results = run_iteration(100, algs, 10, 10, 4)
+#write_plot(LOGFILE, results, algs)
 
+def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
+    with open(filename, "w") as f:
+        for k in range(2, kmax + 1):
+            for n in range(k + 1, nmax + 1):
+
+                results = run_iteration(runs, algs, n, m, k)
+                endresult = results[len(results) - 1]
+
+                print >>f, k, n,
+                print >>f, " ".join([str(x) for x in endresult])
+
+write_3dplot(LOGFILE2, 100, 100, 1000, algs, 1000)
