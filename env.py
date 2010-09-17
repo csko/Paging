@@ -107,41 +107,19 @@ def run_iteration(num, algs, n=6, m=20, k=4):
 
     results = []
 
-    # TODO: optimize, increasing stats
-
-    def avg(runs, col, optcol):
-        """Calculates the average C encountered so far."""
-
-        numruns = len(runs)
-        if numruns == 0:
-            return 0
-
-        return sum([float(x[col]) / x[optcol] for x in runs if x[optcol] != 0]) / numruns
-
-    def minv(runs, col, optcol):
-        """Calculates the minimal C encountered so far."""
-
-        numruns = len(runs)
-        if numruns == 0:
-            return 0
-
-        return min([float(x[col]) / x[optcol] for x in runs if x[optcol] != 0])
-
-    def maxv(runs, col, optcol):
-        """Calculates the minimal C encountered so far."""
-
-        numruns = len(runs)
-        if numruns == 0:
-            return 0
-
-        return max([float(x[col]) / x[optcol] for x in runs if x[optcol] != 0])
+    alglen = len(algs)
+    alg_stats = [IncrementalStats() for _ in range(alglen)]
 
     for i in range(num):
-        alglen = len(algs)
+
         for alg in algs:
             run = run_test(algs, n, m, k)
-            for a in range(len(run)-1):
-                run += [avg(results, a, alglen)] + [minv(results, a, alglen)] + [maxv(results, a, alglen)]
+            opt = run[len(run)-1]
+            if opt != 0:
+                for a in range(len(run)-1):
+                    C = 1.0 * run[a] / opt
+                    alg_stats[a].add(C)
+                    run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
             results.append(run)
 #            print results
 #            print avg(results, 0)
@@ -161,5 +139,5 @@ def write_plot(filename, results, algs):
 
 fifo_alg = FIFO()
 lru_alg = LRU()
-run_iteration(10000, [fifo_alg, lru_alg], 10, 100, 4)
+run_iteration(100, [fifo_alg, lru_alg], 10, 100, 4)
 
