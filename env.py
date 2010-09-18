@@ -105,15 +105,13 @@ def run_iteration(num, algs, n=6, m=20, k=4):
     alg_stats = [IncrementalStats() for _ in range(alglen)]
 
     for i in range(num):
-
-        for alg in algs:
-            run = run_test(algs, n, m, k)
-            opt = run[len(run)-1]
-            if opt != 0:
-                for a in range(len(run)-1):
-                    C = 1.0 * run[a] / opt
-                    alg_stats[a].add(C)
-                    run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
+        run = run_test(algs, n, m, k)
+        opt = run[alglen]
+        if opt != 0:
+            for a in range(alglen):
+                C = 1.0 * run[a] / opt
+                alg_stats[a].add(C)
+                run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
             results.append(run)
     return results
 
@@ -130,7 +128,8 @@ def write_plot(filename, results, algs):
 fifo_alg = FIFO()
 lru_alg = LRU()
 algs = [fifo_alg, lru_alg]
-#results = run_iteration(100, algs, 10, 10, 4)
+#results = run_iteration(10000, algs, 5, 20, 4)
+#print results[len(results)-1]
 #write_plot(LOGFILE, results, algs)
 
 def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
@@ -143,5 +142,6 @@ def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
 
                 print >>f, k, n,
                 print >>f, " ".join([str(x) for x in endresult])
+            f.flush()
 
-write_3dplot(LOGFILE2, 100, 100, 1000, algs, 1000)
+write_3dplot(LOGFILE2, 10, 10, 20, algs, 100000)
