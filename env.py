@@ -15,35 +15,34 @@ logging.basicConfig(level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M')
 
 def find_optimum(case, k):
+    """Computes the optimal offline paging cost using a naive method"""
+
     m = len(case)
     pfnum = 0
     store = [i + 1 for i in range(k)]
 
     for i, c in enumerate(case):
-        if c not in store: # page fault
-#            print store, c
+        if c not in store: # page fault, we need to replace a block
             # if no repetition found, use any (let's say first) piece
             maxt = 0
             maxj = 0
             for j in range(k):
-#                print "looking for", j, store[j]
                 found = False
                 for t in range(i+1, m):
+                    # found repetition
                     if store[j] == case[t]:
-#                        print "found %d at %d" % (case[t], t)
+                        # is it the farthest known?
                         if maxt < t:
                             maxt = t
                             maxj = j
                         found = True
                         break
 
-                # element not found in suffix, means we can freely use that space
+                # No element has been found in suffix, means we can freely use that space
                 if not found:
                     maxj = j
                     maxt = m
                     break
-
-#            print "maxt = %d, maxj = %d, piece = %d" % (maxt, maxj, store[maxj])
 
             store[maxj] = c
 
@@ -51,9 +50,10 @@ def find_optimum(case, k):
     return pfnum
 
 def run_test(algs, n=6, m=20, k=4):
-    # n = külső tár mérete
-    # m = kérések száma
-    # k = belső tár mérete
+    """Runs a single test on all of the algorithms."""
+    # n = external storage size
+    # m = number of requests
+    # k = internal storage size
 
     # generate the test case
     testcase = [random.randint(1, n) for _ in range(m)]
@@ -63,11 +63,7 @@ def run_test(algs, n=6, m=20, k=4):
 #    m = len(testcase)
 
     optimum = find_optimum(testcase, k)
-#    print testcase
-#    print optimum
-#    quit()
 
-#    logging.debug("Using seed %d" % (seed))
     logging.debug("Using test case %s" % (", ".join([str(x) for x in testcase])))
 
     result = []
@@ -91,13 +87,11 @@ def run_test(algs, n=6, m=20, k=4):
 
         result.append(pfnum)
 
-#        print "%s: %d (C=%f)" % (alg, pfnum, C)
-#    print "OPT: %d" % (optimum)
-
     result.append(optimum)
     return result
 
 def run_iteration(num, algs, n=6, m=20, k=4):
+    """Runs a number of simulations and aggregates the results."""
 
     results = []
 
@@ -121,27 +115,39 @@ def write_plot(filename, results, algs):
         for num, run in enumerate(results):
             print >>f, num+1, " ".join([str(x) for x in run])
 
-#seed = 1234
-#random.seed(seed)
-
 
 fifo_alg = FIFO()
 lru_alg = LRU()
 algs = [fifo_alg, lru_alg]
+
 #results = run_iteration(10000, algs, 5, 20, 4)
 #print results[len(results)-1]
 #write_plot(LOGFILE, results, algs)
 
 def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
     with open(filename, "w") as f:
+
+        # header
+        print >>f, "k n m",
+        print >>f, " ".join([" ".join(("%s_avg" % x, "%s_min" % x, "%s_max" % x)) for x in algs])
+
+        # rows
         for k in range(2, kmax + 1):
             for n in range(k + 1, nmax + 1):
 
                 results = run_iteration(runs, algs, n, m, k)
+
+                # we're only interested in the end result this time
                 endresult = results[len(results) - 1]
 
-                print >>f, k, n,
+                print >>f, k, n, m,
                 print >>f, " ".join([str(x) for x in endresult])
             f.flush()
 
-write_3dplot(LOGFILE2, 10, 10, 20, algs, 100000)
+LOGTARGET="runs/run_%03d.txt"
+
+for m in range(3, 100 + 1):
+    write_3dplot(LOGTARGET % m, 10, 10, m, algs, 100)
+    print m
+
+#write_3dplot(LOGFILE2, 10, 10, 20, algs, 100000)

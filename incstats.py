@@ -1,5 +1,6 @@
 
 class IncrementalStats:
+    """Basic incremental stats."""
     def __init__(self):
         self.sum = 0
         self.min = 1e30000
