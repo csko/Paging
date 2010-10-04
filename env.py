@@ -6,9 +6,6 @@ from fifo import FIFO
 from lru import LRU
 from incstats import IncrementalStats
 
-LOGFILE="run.log"
-LOGFILE2="run3d.log"
-
 #logging.basicConfig(level=logging.DEBUG,
 logging.basicConfig(level=logging.INFO,
     format='%(asctime)s %(name)-11s %(levelname)-5s %(message)s',
@@ -98,15 +95,23 @@ def run_iteration(num, algs, n=6, m=20, k=4):
     alglen = len(algs)
     alg_stats = [IncrementalStats() for _ in range(alglen)]
 
-    for i in range(num):
+    i = 0
+    while i < num:
         run = run_test(algs, n, m, k)
         opt = run[alglen]
+
+        # we don't consider cases where there are no page faults
         if opt != 0:
-            for a in range(alglen):
-                C = 1.0 * run[a] / opt
-                alg_stats[a].add(C)
-                run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
-            results.append(run)
+            i += 1
+        else:
+            continue
+
+        for a in range(alglen):
+            C = 1.0 * run[a] / opt
+            alg_stats[a].add(C)
+            run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
+        results.append(run)
+
     return results
 
 def write_plot(filename, results, algs):
@@ -120,11 +125,14 @@ fifo_alg = FIFO()
 lru_alg = LRU()
 algs = [fifo_alg, lru_alg]
 
+#LOGFILE="run.log"
+
 #results = run_iteration(10000, algs, 5, 20, 4)
 #print results[len(results)-1]
 #write_plot(LOGFILE, results, algs)
 
 def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
+    alglen = len(algs)
     with open(filename, "w") as f:
 
         # header
@@ -137,17 +145,20 @@ def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
 
                 results = run_iteration(runs, algs, n, m, k)
 
+                assert len(results) > 0
+
                 # we're only interested in the end result this time
                 endresult = results[len(results) - 1]
 
                 print >>f, k, n, m,
-                print >>f, " ".join([str(x) for x in endresult])
+                print >>f, " ".join([str(endresult[i]) for i in range(alglen+1, len(endresult))])
             f.flush()
 
 LOGTARGET="runs/run_%03d.txt"
 
 for m in range(3, 100 + 1):
-    write_3dplot(LOGTARGET % m, 10, 10, m, algs, 100)
+    write_3dplot(LOGTARGET % m, 100, 100, m, algs, 100)
     print m
 
+#LOGFILE2="run3d.log"
 #write_3dplot(LOGFILE2, 10, 10, 20, algs, 100000)
