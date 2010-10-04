@@ -17,6 +17,7 @@
 
 \graphics default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -52,10 +53,6 @@ Csernai Kornél
 
 \begin_layout Section
 Feladat
-\end_layout
-
-\begin_layout Subsection
-A lapozási probléma
 \end_layout
 
 \begin_layout Standard
@@ -106,10 +103,6 @@ offline
  feladatnál az algoritmus a teljes bemenettel rendelkezik.
 \end_layout
 
-\begin_layout Subsection
-Algoritmusok kiértékelése
-\end_layout
-
 \begin_layout Standard
 A FIFO és LRU algoritmusok az online lapozási problémát oldják meg.
  A FIFO algoritmus mindig a legrégebben felvett elemet dobja ki.
@@ -132,8 +125,8 @@ Ismert, hogy mindkét online algoritmus a legrosszabb esetben az offline
  Az átlagos eset azért érdekes, mert a gyakorlatban használt a lapcímek
  valamilyen eloszlást követnek.
  Most csak az egyenletes eloszlásra koncentrálunk.
- A feladatunk, hogy a két adott online algoritmust megvizsgáljuk átlagos
- eset szempontjából.
+ A feladatunk, hogy a két adott online algoritmust megvizsgáljuk empirikus
+ átlagos eset szempontjából.
 \end_layout
 
 \begin_layout Section
@@ -179,7 +172,7 @@ A teszteknek a következő paraméterei vannak:
 
 \begin_layout Standard
 Minden futás az 
-\begin_inset Formula $\left\{ 1,2,\ldots n\right\} $
+\begin_inset Formula $\left\{ 1,2,\ldots,n\right\} $
 \end_inset
 
  kérésekkel indul, amely a gyorsmemóriát inicializálja.
@@ -202,7 +195,7 @@ Minden futás az
 
 \begin_layout Standard
 Egy egyszeri mérésnél az 
-\begin_inset Formula $k,n,m$
+\begin_inset Formula $(k,n,m)$
 \end_inset
 
  paraméterek rögzítettek és következő történik:
@@ -232,8 +225,8 @@ Az egyes algoritmusok eredményeit elosztom az optimummal, ez lesz az algoritmus
 \end_layout
 
 \begin_layout Standard
-Ilyen egyszeri futásokból 100 próbát teszek és veszem a teljesítmények átlagát,
- minimumát, maximumát.
+Ilyen egyszeri futásokból 100 ismételt próbát teszek és veszem a teljesítmények
+ átlagát, minimumát, maximumát.
  A 
 \begin_inset Formula \[
 P=\left\{ (k,n,m)\,\mid\,2\leq k\leq k_{max},\, k+1\leq n\leq n_{max},\ 3\leq m\leq m_{max}\right\} \]
@@ -257,7 +250,6 @@ A programot Python scriptnyelven, részben objektum-orientált módon valósíto
  A futtatási környezet egy interfészt biztosít, amelybe bármely online lapozási
  algoritmus beilleszthető.
  Két ilyen algoritmus valósítottam meg: FIFO és LRU.
- 
 \end_layout
 
 \begin_layout Standard
@@ -265,7 +257,7 @@ A program lényege, hogy az összes
 \begin_inset Formula $p\in P$
 \end_inset
 
- paramétert többször lefuttassa, az értékeket aggregálja.
+ paramétert többször lefuttatja, az értékeket aggregálva.
  Vegyük észre, hogy különböző 
 \begin_inset Formula $p$
 \end_inset
@@ -283,15 +275,496 @@ status open
 
 
 \backslash
-verb|
-\lang magyar
-run_003.txt, run_004.txt, ...
-|
+verb|run_003.txt, run_004.txt|
+\end_layout
+
+\end_inset
+
+, stb.
+ Az így készült fájlok soronként oszlopokat tartalmaznak, szóközzel elválasztva.
+ Minden egyes sor az adott 
+\begin_inset Formula $p$
+\end_inset
+
+ paraméter mellett kapott eredményeket tartalmazza.
+\end_layout
+
+\begin_layout Standard
+Az első sor tartalmazza a fejléc oszlopokat:
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+k
+\emph default
+, a 
+\begin_inset Formula $k$
+\end_inset
+
+ paraméter aktuális értéke
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+n
+\emph default
+, az 
+\begin_inset Formula $n$
+\end_inset
+
+ paraméter aktuális értéke
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+m
+\emph default
+, az 
+\begin_inset Formula $\mbox{m}$
+\end_inset
+
+ paraméter aktuális értéke
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+FIFO_avg
+\emph default
+, a FIFO algoritmus átlagos teljesítménye
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+FIFO_min
+\emph default
+, a FIFO algoritmus legjobb (minimális) teljesítménye
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+FIFO_max
+\emph default
+, a FIFO algoritmus legrosszabb (maximális) teljesítménye
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+LRU_avg
+\emph default
+, az LRU algoritmus átlagos teljesítménye
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+LRU_min
+\emph default
+, az LRU algoritmus legjobb (minimális) teljesítménye
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+LRU_max
+\emph default
+, az LRU algoritmus legrosszabb (maximális) teljesítménye
+\end_layout
+
+\begin_layout Subsection*
+A megvalósítás részletei
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "breaklines=true,language=Python,numbers=left"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+class FIFO(Algorithm):
+\end_layout
+
+\begin_layout Plain Layout
+
+    def init(self, n, k):
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.k = k
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.store = [i + 1 for i in range(k)]
+\end_layout
+
+\begin_layout Plain Layout
+
+        logger.debug(self.store)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.lastpos = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def find(self, piece):
+\end_layout
+
+\begin_layout Plain Layout
+
+        try:
+\end_layout
+
+\begin_layout Plain Layout
+
+            pos = self.store.index(piece)
+\end_layout
+
+\begin_layout Plain Layout
+
+            return pos
+\end_layout
+
+\begin_layout Plain Layout
+
+        except ValueError:
+\end_layout
+
+\begin_layout Plain Layout
+
+            return -1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def request(self, piece):
+\end_layout
+
+\begin_layout Plain Layout
+
+        pos = self.find(piece)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        if pos == -1: # piece not found, page fault
+\end_layout
+
+\begin_layout Plain Layout
+
+        # FIFO behavior, changing the i%k -th  element in round i
+\end_layout
+
+\begin_layout Plain Layout
+
+            drop = self.lastpos
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.store[drop] = piece
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.lastpos += 1
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.lastpos %= self.k
+\end_layout
+
+\begin_layout Plain Layout
+
+            return drop
+\end_layout
+
+\begin_layout Plain Layout
+
+        else: # piece found
+\end_layout
+
+\begin_layout Plain Layout
+
+            return pos
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def __str__(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        return "FIFO"
 \end_layout
 
 \end_inset
 
 
+\begin_inset listings
+lstparams "breaklines=true,language=Python,numbers=left"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+class LRU(Algorithm):
+\end_layout
+
+\begin_layout Plain Layout
+
+    def init(self, n, k):
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.k = k
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.store = [i + 1 for i in range(k)]
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.usage = [i for i in range(k)]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        # round counter
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.round = k - 1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.lastpos = 0
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def find(self, piece):
+\end_layout
+
+\begin_layout Plain Layout
+
+        try:
+\end_layout
+
+\begin_layout Plain Layout
+
+            pos = self.store.index(piece)
+\end_layout
+
+\begin_layout Plain Layout
+
+            return pos
+\end_layout
+
+\begin_layout Plain Layout
+
+        except ValueError:
+\end_layout
+
+\begin_layout Plain Layout
+
+            return -1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def request(self, piece):
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        self.round += 1
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        pos = self.find(piece)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+        if pos == -1: # piece not found, page fault
+\end_layout
+
+\begin_layout Plain Layout
+
+            # find the least recently used slot:
+\end_layout
+
+\begin_layout Plain Layout
+
+            minpos = -1
+\end_layout
+
+\begin_layout Plain Layout
+
+            mintime = self.round
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            for i, j in enumerate(self.usage):
+\end_layout
+
+\begin_layout Plain Layout
+
+                if j < mintime: # found a new minimum
+\end_layout
+
+\begin_layout Plain Layout
+
+                    minpos = i
+\end_layout
+
+\begin_layout Plain Layout
+
+                    mintime = j
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.store[minpos] = piece
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.usage[minpos] = self.round
+\end_layout
+
+\begin_layout Plain Layout
+
+            return minpos
+\end_layout
+
+\begin_layout Plain Layout
+
+        else: # piece found
+\end_layout
+
+\begin_layout Plain Layout
+
+            # actualize last used time for this piece
+\end_layout
+
+\begin_layout Plain Layout
+
+            self.usage[pos] = self.round
+\end_layout
+
+\begin_layout Plain Layout
+
+            return pos
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    def __str__(self):
+\end_layout
+
+\begin_layout Plain Layout
+
+        return "LRU"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Eredmények
+\end_layout
+
+\begin_layout Standard
+TODO: ábra
+\end_layout
+
+\begin_layout Standard
+TODO: konklúzió
 \end_layout
 
 \end_body
