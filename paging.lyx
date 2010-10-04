@@ -1,0 +1,298 @@
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language magyar
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Az online lapozási problémára adott FIFO és LRU algoritmusok átlagos eset
+ vizsgálata
+\end_layout
+
+\begin_layout Author
+Csernai Kornél
+\end_layout
+
+\begin_layout Section
+Feladat
+\end_layout
+
+\begin_layout Subsection
+A lapozási probléma
+\end_layout
+
+\begin_layout Standard
+Adott 
+\begin_inset Formula $k$
+\end_inset
+
+ méretű gyorsmemória és 
+\begin_inset Formula $n$
+\end_inset
+
+ méretű háttérmemória (általában 
+\begin_inset Formula $n\gg k$
+\end_inset
+
+).
+ A háttérmemória használata költséges, ezért egyes részeit a gyorsmemóriában
+ is eltároljuk.
+ A rendszer folyamatosan kéréseket kap háttérmemóriára vonatkozóan, amelyeket
+ ki kell elégítenie, lehetőleg a gyorsmemóriából.
+ Ha a gyorsmemória betelik és egy kérésnek nem tudunk eleget tenni, akkor
+ a 
+\emph on
+laphiba (page fault)
+\emph default
+ lép fel.
+ A cél a laphibák számának minimalizálása.
+\end_layout
+
+\begin_layout Standard
+Az egyes stratégiák abban különböznek egymástól, hogy a laphibák esetén
+ a kért lapot melyik, már bent levő lap helyére teszi.
+ Az így kiválasztott lapot a gyorsmemóriából el kell távolítani, helyére
+ a kért lap kerül.
+\end_layout
+
+\begin_layout Standard
+A feladat 
+\emph on
+online
+\emph default
+, ha az algoritmus a kéréseket egyesével kapja meg, és minden kérésnél rögtön,
+ helyben dönteni kell annak sorsáról.
+ Ezzel szemben az 
+\emph on
+offline
+\emph default
+ feladatnál az algoritmus a teljes bemenettel rendelkezik.
+\end_layout
+
+\begin_layout Subsection
+Algoritmusok kiértékelése
+\end_layout
+
+\begin_layout Standard
+A FIFO és LRU algoritmusok az online lapozási problémát oldják meg.
+ A FIFO algoritmus mindig a legrégebben felvett elemet dobja ki.
+ Ezzel szemben az LRU a legrégebben használt elemet dobja ki.
+ Az offline feladat esetében az optimális megoldás hatékonyan megtalálható.
+\end_layout
+
+\begin_layout Standard
+Ismert, hogy mindkét online algoritmus a legrosszabb esetben az offline
+ optimális megoldás 
+\begin_inset Formula $k$
+\end_inset
+
+-szorosát adják (
+\begin_inset Formula $k$
+\end_inset
+
+-versenyképes).
+ Azt viszont nehezebb megtalálni, hogy átlagos esetben hogyan teljesítenek.
+ Az átlagos eset azért érdekes, mert a gyakorlatban használt a lapcímek
+ valamilyen eloszlást követnek.
+ Most csak az egyenletes eloszlásra koncentrálunk.
+ A feladatunk, hogy a két adott online algoritmust megvizsgáljuk átlagos
+ eset szempontjából.
+\end_layout
+
+\begin_layout Section
+Futási környezet
+\end_layout
+
+\begin_layout Standard
+A mérésekhez implementáltam a FIFO, LRU és a NAIV-OPT algoritmusokat és
+ elkészítettem egy szimulátor környezetet.
+\end_layout
+
+\begin_layout Standard
+A teszteknek a következő paraméterei vannak:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $k$
+\end_inset
+
+, a gyorsmemória mérete
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $n$
+\end_inset
+
+, a háttérmemória mérete
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $m$
+\end_inset
+
+, a kérések száma
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $I=\sigma=\left\{ \sigma_{1},\ldots,\sigma_{m}\right\} $
+\end_inset
+
+, a kérések sorozata
+\end_layout
+
+\begin_layout Standard
+Minden futás az 
+\begin_inset Formula $\left\{ 1,2,\ldots n\right\} $
+\end_inset
+
+ kérésekkel indul, amely a gyorsmemóriát inicializálja.
+ Ezek nem számítanak bele az 
+\begin_inset Formula $m$
+\end_inset
+
+ kérésbe.
+ Minden további kéréshez egy-egy véletlenszámot generáltam egyenletes eloszlás
+ szerint 
+\begin_inset Formula $1$
+\end_inset
+
+ és 
+\begin_inset Formula $n$
+\end_inset
+
+ között.
+\end_layout
+
+\begin_layout Standard
+Egy egyszeri mérésnél az 
+\begin_inset Formula $k,n,m$
+\end_inset
+
+ paraméterek rögzítettek és következő történik:
+\end_layout
+
+\begin_layout Enumerate
+Véletlen sorozat generálása.
+\end_layout
+
+\begin_layout Enumerate
+Optimum megkeresése a NAIV-OPT algoritmussal.
+ Amennyiben az optimum 
+\begin_inset Formula $0$
+\end_inset
+
+, újra végrehajtom az 1.
+ lépést.
+\end_layout
+
+\begin_layout Enumerate
+Az algoritmusok lefuttatása, online szimuláció.
+\end_layout
+
+\begin_layout Enumerate
+Az egyes algoritmusok eredményeit elosztom az optimummal, ez lesz az algoritmus
+ teljesítménye.
+\end_layout
+
+\begin_layout Standard
+Ilyen egyszeri futásokból 100 próbát teszek és veszem a teljesítmények átlagát,
+ minimumát, maximumát.
+ A 
+\begin_inset Formula \[
+P=\left\{ (k,n,m)\,\mid\,2\leq k\leq k_{max},\, k+1\leq n\leq n_{max},\ 3\leq m\leq m_{max}\right\} \]
+
+\end_inset
+
+halmaz adja az összes futás paramétereit, tipikusan 
+\begin_inset Formula $k_{max}=100,\, n_{max}=100,\, m_{max}=100$
+\end_inset
+
+ konstansokkal.
+\end_layout
+
+\begin_layout Section
+Technikai részletek
+\end_layout
+
+\begin_layout Standard
+A programot Python scriptnyelven, részben objektum-orientált módon valósítottam
+ meg.
+ A futtatási környezet egy interfészt biztosít, amelybe bármely online lapozási
+ algoritmus beilleszthető.
+ Két ilyen algoritmus valósítottam meg: FIFO és LRU.
+ 
+\end_layout
+
+\begin_layout Standard
+A program lényege, hogy az összes 
+\begin_inset Formula $p\in P$
+\end_inset
+
+ paramétert többször lefuttassa, az értékeket aggregálja.
+ Vegyük észre, hogy különböző 
+\begin_inset Formula $p$
+\end_inset
+
+ paraméterek felett a bemeneti sorozat nem rögzített.
+ A környezet feljegyzett eredményeket fájlokban tárolja, az 
+\begin_inset Formula $m$
+\end_inset
+
+ paraméter szerint csoportosítva: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+verb|
+\lang magyar
+run_003.txt, run_004.txt, ...
+|
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
