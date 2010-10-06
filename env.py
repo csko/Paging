@@ -6,11 +6,6 @@ from fifo import FIFO
 from lru import LRU
 from incstats import IncrementalStats
 
-#logging.basicConfig(level=logging.DEBUG,
-logging.basicConfig(level=logging.INFO,
-    format='%(asctime)s %(name)-11s %(levelname)-5s %(message)s',
-    datefmt='%Y-%m-%d %H:%M')
-
 def find_optimum(case, k):
     """Computes the optimal offline paging cost using a naive method"""
 
@@ -59,14 +54,16 @@ def run_test(algs, n=6, m=20, k=4):
 #    testcase = [2, 3, 5, 2, 5, 3, 6, 6, 4, 6, 3, 5, 6, 6, 1, 2, 3, 6, 2, 1]
 #    m = len(testcase)
 
+    logging.debug("Using test case [%s]" % (", ".join([str(x) for x in testcase])))
+
     optimum = find_optimum(testcase, k)
 
-    logging.debug("Using test case %s" % (", ".join([str(x) for x in testcase])))
+    logging.debug("Optimum is %d." % (optimum))
 
     result = []
 
     for alg in algs:
-        logging.debug("Run alg=%s, n=%d, m=%d, k=%d" % (alg, n, m, k))
+        logging.debug("Running algorithm %s with parameters n=%d, m=%d, k=%d" % (alg, n, m, k))
 
         state = [i + 1 for i in range(k)]
         pfnum = 0
@@ -74,15 +71,21 @@ def run_test(algs, n=6, m=20, k=4):
         alg.init(n, k)
 
         for c in testcase:
+            logging.debug("State: %s" % state)
+            logging.debug("Requesting piece %d." % c)
             place = alg.request(c)
             if state[place] != c: # page fault
                 logging.debug("Page fault detected, pos=%d, old=%d, new=%d" % (place, state[place], c))
                 pfnum += 1
                 state[place] = c
+            else:
+                logging.debug("Piece found.")
+        logging.debug("END STATE: %s" % state)
 
         assert pfnum >= optimum
 
         result.append(pfnum)
+        logging.debug("[%s] Number of page faults: %d" % (alg, pfnum))
 
     result.append(optimum)
     return result
@@ -121,9 +124,6 @@ def write_plot(filename, results, algs):
             print >>f, num+1, " ".join([str(x) for x in run])
 
 
-fifo_alg = FIFO()
-lru_alg = LRU()
-algs = [fifo_alg, lru_alg]
 
 #LOGFILE="run.log"
 
@@ -154,11 +154,22 @@ def write_3dplot(filename, kmax, nmax, m, algs, runs=10):
                 print >>f, " ".join([str(endresult[i]) for i in range(alglen+1, len(endresult))])
             f.flush()
 
-LOGTARGET="runs/run_%03d.txt"
+if __name__ == "__main__":
 
-for m in range(3, 100 + 1):
-    write_3dplot(LOGTARGET % m, 100, 100, m, algs, 100)
-    print m
+    fifo_alg = FIFO()
+    lru_alg = LRU()
+    algs = [fifo_alg, lru_alg]
+
+    #logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
+        format='%(asctime)s %(name)-11s %(levelname)-5s %(message)s',
+        datefmt='%Y-%m-%d %H:%M')
+
+    LOGTARGET="runs/run_%03d.txt"
+
+    for m in range(3, 100 + 1):
+        write_3dplot(LOGTARGET % m, 100, 100, m, algs, 100)
+        print m
 
 #LOGFILE2="run3d.log"
 #write_3dplot(LOGFILE2, 10, 10, 20, algs, 100000)

@@ -4,16 +4,14 @@ import logging
 from alg import Algorithm
 
 logger = logging.getLogger('lru')
-#logger.setLevel(logging.DEBUG)
-
 
 class LRU(Algorithm):
     def init(self, n, k):
         self.k = k
         self.store = [i + 1 for i in range(k)]
         self.usage = [i for i in range(k)]
-        logger.debug(self.store)
-        logger.debug(self.usage)
+#        logger.debug(self.store)
+#        logger.debug(self.usage)
 
         # round counter
         self.round = k - 1
@@ -33,9 +31,9 @@ class LRU(Algorithm):
 
         pos = self.find(piece)
 
-        logger.debug(piece)
-        logger.debug(self.store)
-        logger.debug(self.usage)
+#        logger.debug(piece)
+#        logger.debug(self.store)
+#        logger.debug(self.usage)
         if pos == -1: # piece not found, page fault
             # find the least recently used slot:
             minpos = -1
