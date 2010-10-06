@@ -9,12 +9,17 @@ from incstats import IncrementalStats
 def find_optimum(case, k):
     """Computes the optimal offline paging cost using a naive method"""
 
+    logging.debug("Finding optimum.")
+
     m = len(case)
     pfnum = 0
     store = [i + 1 for i in range(k)]
 
     for i, c in enumerate(case):
+        logging.debug("State: %s" % store)
+        logging.debug("Requesting piece %d." % c)
         if c not in store: # page fault, we need to replace a block
+            logging.debug("Piece not found, page fault.")
             # if no repetition found, use any (let's say first) piece
             maxt = 0
             maxj = 0
@@ -32,13 +37,17 @@ def find_optimum(case, k):
 
                 # No element has been found in suffix, means we can freely use that space
                 if not found:
+                    logging.debug("No piece %d found in suffix, we can freely drop that piece, which we will do." % store[j])
                     maxj = j
                     maxt = m
                     break
 
+            logging.debug("Piece %d comes up again the latest, in position %d. We are going to drop it." % (store[maxj], maxt+1))
             store[maxj] = c
 
             pfnum += 1
+        else:
+            logging.debug("Piece found.")
     return pfnum
 
 def run_test(algs, n=6, m=20, k=4):
