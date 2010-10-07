@@ -63,6 +63,9 @@ def run_test(algs, n=6, m=20, k=4):
 #    testcase = [2, 3, 5, 2, 5, 3, 6, 6, 4, 6, 3, 5, 6, 6, 1, 2, 3, 6, 2, 1]
 #    m = len(testcase)
 
+#    testcase = [1, 4, 2, 3, 1, 4, 1, 5, 5, 1, 4, 3, 4, 2, 5, 2, 1, 1, 3, 4]
+#    m = len(testcase)
+
     logging.debug("Using test case [%s]" % (", ".join([str(x) for x in testcase])))
 
     optimum = find_optimum(testcase, k)
@@ -122,6 +125,28 @@ def run_iteration(num, algs, n=6, m=20, k=4):
             C = 1.0 * run[a] / opt
             alg_stats[a].add(C)
             run += [alg_stats[a].avg(), alg_stats[a].min, alg_stats[a].max]
+        results.append(run)
+
+    return results
+
+def run_iteration2(num, algs, n=6, m=20, k=4):
+    """Runs a number of simulations, but does not aggregate the results."""
+
+    results = []
+
+    alglen = len(algs)
+
+    i = 0
+    while i < num:
+        run = run_test(algs, n, m, k)
+        opt = run[alglen]
+
+        # we don't consider cases where there are no page faults
+        if opt != 0:
+            i += 1
+        else:
+            continue
+
         results.append(run)
 
     return results

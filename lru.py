@@ -44,6 +44,9 @@ class LRU(Algorithm):
                     minpos = i
                     mintime = j
 
+            logging.debug("Last usage: %s. Using piece %d." % (", ".join(["%d: %d" % (self.store[i], max(0, 1+self.usage[i]-self.k)) for i in range(self.k)]), self.store[minpos]))
+
+#            logging.debug("Ages: %s" % 
             self.store[minpos] = piece
             self.usage[minpos] = self.round
             return minpos
