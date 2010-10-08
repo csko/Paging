@@ -50,6 +50,59 @@ def find_optimum(case, k):
             logging.debug("Piece found.")
     return pfnum
 
+def find_optimum2(case, k):
+    """Computes the optimal offline paging cost using a naive method"""
+
+    logging.debug("Finding optimum.")
+
+    m = len(case)
+    pfnum = 0
+    store = [i + 1 for i in range(k)]
+    seen = dict([(i+1, []) for i in range(k)])
+
+    for i, c in enumerate(case):
+        if c not in seen:
+            seen[c] = [i]
+        else:
+            seen[c].append(i)
+
+    logging.debug(seen)
+
+    for i, c in enumerate(case):
+        logging.debug("State: %s" % store)
+        logging.debug("Requesting piece %d." % c)
+
+        seen[c].remove(i)
+
+        if c not in store: # page fault, we need to replace a block
+            logging.debug("Piece not found, page fault.")
+            # if no repetition found, use any (let's say first) piece
+            maxt = 0
+            maxj = 0
+
+            # look for a piece to discard
+            for j, st in enumerate(store):
+                row = seen[st]
+#                print st, row
+
+                # piece won't reappear, we are free to discard it
+                if len(row) == 0:
+                    maxj = j
+                    maxt = m
+                    logging.debug("No piece %d found in suffix, we can freely drop that piece, which we will do." % store[j])
+                    break
+                else:
+                    t = row[0]
+                    if maxt < t:
+                        maxt = t
+                        maxj = j
+            logging.debug("Piece %d comes up again the latest, in position %d. We are going to drop it." % (store[maxj], maxt+1))
+            store[maxj] = c
+            pfnum += 1
+        else:
+            logging.debug("Piece found.")
+    return pfnum
+
 def run_test(algs, n=6, m=20, k=4):
     """Runs a single test on all of the algorithms."""
     # n = external storage size
@@ -68,7 +121,9 @@ def run_test(algs, n=6, m=20, k=4):
 
     logging.debug("Using test case [%s]" % (", ".join([str(x) for x in testcase])))
 
-    optimum = find_optimum(testcase, k)
+#    optimum = find_optimum(testcase, k)
+    optimum = find_optimum2(testcase, k)
+#    assert(optimum == optimum2)
 
     logging.debug("Optimum is %d." % (optimum))
 

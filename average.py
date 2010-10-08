@@ -33,6 +33,6 @@ if __name__ == "__main__":
     lru_alg = LRU()
     algs = [fifo_alg, lru_alg]
 
-    x = run_iteration2(10, algs, n, m, k)
+    x = run_iteration2(tries, algs, n, m, k)
     for i in x:
         logging.info("FIFO: %d (C=%f), LRU: %d (C=%f), OPT: %d" % (i[0], 1.0*i[0] / i[2], i[1], 1.0*i[1] / i[2], i[2]))
