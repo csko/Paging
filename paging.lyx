@@ -134,8 +134,8 @@ Futási környezet
 \end_layout
 
 \begin_layout Standard
-A mérésekhez implementáltam a FIFO, LRU és a NAIV-OPT algoritmusokat és
- elkészítettem egy szimulátor környezetet.
+A mérésekhez implementáltam a FIFO, LRU és az OPT algoritmusokat és elkészítette
+m egy szimulátor környezetet.
 \end_layout
 
 \begin_layout Standard
@@ -206,7 +206,7 @@ Véletlen sorozat generálása.
 \end_layout
 
 \begin_layout Enumerate
-Optimum megkeresése a NAIV-OPT algoritmussal.
+Optimum megkeresése az OPT algoritmussal.
  Amennyiben az optimum 
 \begin_inset Formula $0$
 \end_inset
@@ -234,7 +234,7 @@ P=\left\{ (k,n,m)\,\mid\,2\leq k\leq k_{max},\, k+1\leq n\leq n_{max},\ 3\leq m\
 \end_inset
 
 halmaz adja az összes futás paramétereit, tipikusan 
-\begin_inset Formula $k_{max}=100,\, n_{max}=100,\, m_{max}=100$
+\begin_inset Formula $k_{max}=99,\, n_{max}=100,\, m_{max}=100$
 \end_inset
 
  konstansokkal.
@@ -253,7 +253,17 @@ A programot Python scriptnyelven, részben objektum-orientált módon valósíto
 \end_layout
 
 \begin_layout Standard
-A program lényege, hogy az összes 
+Az interfész legfontosabb része a request függvény.
+ A keretrendszer a soron következő kéréssel paraméterezi a függvényt, amelyet
+ az algoritmus lefuttat, és visszaadja azt a cella indexet, amelyre kicserélné
+ a kért blokkot.
+ Ha nincs cserére szükség, akkor a megtalált blokk indexét kell visszaadni.
+ A keretrendszer számontartja a gyorsmemória aktuális állapotát és feljegyzi
+ a laphibák számát.
+\end_layout
+
+\begin_layout Standard
+A futtatókörnyezet lényege, hogy az összes 
 \begin_inset Formula $p\in P$
 \end_inset
 
@@ -756,15 +766,44 @@ class LRU(Algorithm):
 \end_layout
 
 \begin_layout Section
-Eredmények
+Futtatás
 \end_layout
 
 \begin_layout Standard
-TODO: ábra
+A futtatáshoz Python értelmező szükséges.
+ A következő futtatásokat végeztem el:
 \end_layout
 
 \begin_layout Standard
-TODO: konklúzió
+\align center
+
+\family typewriter
+\lang american
+./single.py 5 20 3
+\family default
+ – Egyszeri, részletezett futás a megadott N, M, K paraméterekkel.
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family typewriter
+\lang american
+./average.py 1000 100000 100 100 
+\family default
+– Az utolsó paraméter megadja, hogy hány egyszeri futást végezzünk.
+ Itt már nem részletes.
+\end_layout
+
+\begin_layout Standard
+\align center
+
+\family typewriter
+\lang american
+./env.py 
+\family default
+– A 3.
+ részben leírtakat végzi el.
 \end_layout
 
 \end_body

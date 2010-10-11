@@ -16,7 +16,7 @@ if __name__ == "__main__":
         datefmt='%Y-%m-%d %H:%M')
 
     if len(argv) < 5:
-        print "usage: single.py N M K TRIES"
+        print "usage: average.py N M K TRIES"
         exit(1)
     try:
         n = int(argv[1])
