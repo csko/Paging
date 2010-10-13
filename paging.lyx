@@ -253,7 +253,11 @@ A programot Python scriptnyelven, részben objektum-orientált módon valósíto
 \end_layout
 
 \begin_layout Standard
-Az interfész legfontosabb része a request függvény.
+Az interfész legfontosabb része a 
+\family typewriter
+request
+\family default
+ függvény.
  A keretrendszer a soron következő kéréssel paraméterezi a függvényt, amelyet
  az algoritmus lefuttat, és visszaadja azt a cella indexet, amelyre kicserélné
  a kért blokkot.

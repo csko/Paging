@@ -1,0 +1,125 @@
+%% LyX 1.6.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,american]{book}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{1}
+\setcounter{tocdepth}{1}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage[a4paper,landscape]{geometry}
+
+\makeatother
+
+\usepackage{babel}
+
+\begin{document}
+\begin{center}
+{\small }%
+\begin{table}[!t]
+{\small }\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline 
+\multicolumn{2}{|c|}{{\small Input}} & \multicolumn{2}{c|}{{\small OPT}} & \multicolumn{2}{c|}{{\small FIFO}} & \multicolumn{2}{c|}{{\small LRU}}\tabularnewline
+\hline
+\hline 
+{\small \#} & {\small Piece} & {\small Store} & {\small Comment} & {\small Store} & {\small Comment} & {\small Store} & {\small Comment}\tabularnewline
+\hline 
+0. & 1,2,3 & {\small {[}1, 2, 3{]}} & {\small Initial setup.} & {\small {[}1, 2, 3{]}} & {\small Initial setup.} & {\small {[}1, 2, 3{]}} & {\small Initial setup.}\tabularnewline
+\hline 
+{\small 1.} & {\small 1} & {\small {[}1, 2, 3{]}} & {\small Piece found.} & {\small {[}1, 2, 3{]}} & {\small Piece found.} & {[}1, 2, 3{]} & Piece found.\tabularnewline
+\hline 
+{\small 2.} & {\small 4} & {\small {[}4, 2, 3{]}} & {\small 1 comes up again the latest, in pos. 5.} & {\small {[}4, 2, 3{]}} & {\small Dropping pos. 1.} & {[}1, 4, 3{]} & Last usage: 1: 1, 2: 0, 3: 0.\tabularnewline
+\hline 
+{\small 3.} & {\small 2} & {\small {[}4, 2, 3{]}} & {\small Piece found.} & {\small {[}4, 2, 3{]}} & {\small Piece found.} & {[}1, 4, 2{]} & Last usage: 1: 1, 4: 2, 3: 0.\tabularnewline
+\hline 
+{\small 4.} & {\small 3} & {\small {[}4, 2, 3{]}} & {\small 2 comes up again the latest, in pos. 14.} & {\small {[}4, 2, 3{]}} & {\small Piece found.} & {[}3, 4, 2{]} & Last usage: 1: 1, 4: 2, 2: 3.\tabularnewline
+\hline 
+{\small 5.} & {\small 1} & {\small {[}4, 1, 3{]}} & {\small Piece found.} & {\small {[}4, 1, 3{]}} & {\small Dropping pos. 2.} & {[}3, 1, 2{]} & Last usage: 3: 4, 4: 2, 2: 3.\tabularnewline
+\hline 
+{\small 6.} & {\small 4} & {\small {[}4, 1, 3{]}} & {\small Piece found.} & {\small {[}4, 1, 3{]}} & {\small Piece found.} & {[}3, 1, 4{]} & Last usage: 3: 4, 1: 5, 2: 3.\tabularnewline
+\hline 
+{\small 7.} & {\small 1} & {\small {[}4, 1, 3{]}} & {\small Piece found.} & {\small {[}4, 1, 3{]}} & {\small Piece found.} & {[}3, 1, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 8.} & {\small 5} & {\small {[}4, 1, 5{]}} & {\small 3 comes up again the latest, in pos. 12.} & {\small {[}4, 1, 5{]}} & {\small Dropping pos. 3.} & {[}5, 1, 4{]} & Last usage: 3: 4, 1: 7, 4: 6.\tabularnewline
+\hline 
+{\small 9.} & {\small 5} & {\small {[}4, 1, 5{]}} & {\small Piece found.} & {\small {[}4, 1, 5{]}} & {\small Piece found.} & {[}5, 1, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 10.} & {\small 1} & {\small {[}4, 1, 5{]}} & {\small Piece found.} & {\small {[}4, 1, 5{]}} & {\small Piece found.} & {[}5, 1, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 11.} & {\small 4} & {\small {[}4, 1, 5{]}} & {\small 1 comes up again the latest, in pos. 17.} & {\small {[}4, 1, 5{]}} & {\small Piece found.} & {[}5, 1, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 12.} & {\small 3} & {\small {[}4, 3, 5{]}} & {\small Piece found.} & {\small {[}3, 1, 5{]}} & {\small Dropping pos. 1.} & {[}3, 1, 4{]} & Last usage: 5: 9, 1: 10, 4: 11.\tabularnewline
+\hline 
+{\small 13.} & {\small 4} & {\small {[}4, 3, 5{]}} & {\small Piece found.} & {\small {[}3, 4, 5{]}} & {\small Dropping pos. 2.} & {[}3, 1, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 14.} & {\small 2} & {\small {[}2, 3, 5{]}} & {\small 4 comes up again the latest, in pos. 20.} & {\small {[}3, 4, 2{]}} & {\small Dropping pos. 3.} & {[}3, 2, 4{]} & Last usage: 3: 12, 1: 10, 4: 13.\tabularnewline
+\hline 
+{\small 15.} & {\small 5} & {\small {[}2, 3, 5{]}} & {\small Piece found.} & {\small {[}5, 4, 2{]}} & {\small Piece found.} & {[}5, 2, 4{]} & Last usage: 3: 12, 2: 14, 4: 13.\tabularnewline
+\hline 
+{\small 16.} & {\small 2} & {\small {[}2, 3, 5{]}} & {\small Piece found.} & {\small {[}5, 4, 2{]}} & {\small Dropping pos. 1.} & {[}5, 2, 4{]} & Piece found.\tabularnewline
+\hline 
+{\small 17.} & {\small 1} & {\small {[}1, 3, 5{]}} & {\small No piece 2 found, dropping it.} & {\small {[}5, 1, 2{]}} & {\small Dropping pos. 2.} & {[}5, 2, 1{]} & Last usage: 5: 15, 2: 16, 4: 13.\tabularnewline
+\hline 
+{\small 18.} & {\small 1} & {\small {[}1, 3, 5{]}} & {\small Piece found.} & {\small {[}5, 1, 2{]}} & {\small Piece found.} & {[}5, 2, 1{]} & Piece found.\tabularnewline
+\hline 
+{\small 19.} & {\small 3} & {\small {[}1, 3, 5{]}} & {\small Piece found.} & {\small {[}5, 1, 3{]}} & {\small Dropping pos. 3.} & {[}3, 2, 1{]} & Last usage: 5: 15, 2: 16, 1: 18.\tabularnewline
+\hline 
+{\small 20.} & {\small 4} & {\small {[}4, 3, 5{]}} & {\small No piece 1 found, dropping it.} & {\small {[}4, 1, 3{]}} & {\small Dropping pos. 1.} & {[}3, 4, 1{]} & Last usage: 3: 19, 2: 16, 1: 18.\tabularnewline
+\hline 
+ &  & \multicolumn{2}{c|}{{\small Number of page faults: 7}} & \multicolumn{2}{c|}{{\small Number of page faults: 10}} & \multicolumn{2}{c|}{Number of page faults: 12}\tabularnewline
+\hline
+\end{tabular}{\small \par}
+
+{\small \caption{Single run results for {[}1, 4, 2, 3, 1, 4, 1, 5, 5, 1, 4, 3, 4, 2,
+5, 2, 1, 1, 3, 4{]}, N=5, M=20, K=3. Command used: ./single.py 5 20
+3}
+}
+\end{table}
+%
+\begin{table}[!t]
+\begin{centering}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+\# & OPT & \multicolumn{2}{c|}{FIFO} & \multicolumn{2}{c|}{LRU}\tabularnewline
+\hline
+\hline 
+ & \# Page faults & \# Page faults & C & \# Page faults & C\tabularnewline
+\hline 
+1. & 60256 & 89974 & 1.493196 & 89939 & 1.492615\tabularnewline
+\hline 
+2. & 60323 & 90036 & 1.492565 & 90007 & 1.492084\tabularnewline
+\hline 
+3. & 60266 & 90057 & 1.494325 & 90044 & 1.494109\tabularnewline
+\hline 
+4. & 60460 & 90209 & 1.492044 & 90207 & 1.492011\tabularnewline
+\hline 
+5. & 60265 & 90041 & 1.494084 & 90063 & 1.494450\tabularnewline
+\hline 
+6. & 60113 & 89921 & 1.495866 & 89945 & 1.496265\tabularnewline
+\hline 
+7. & 60323 & 89918 & 1.490609 & 89973 & 1.491521\tabularnewline
+\hline 
+8. & 60452 & 90104 & 1.490505 & 90084 & 1.490174\tabularnewline
+\hline 
+9. & 60210 & 89978 & 1.494403 & 89960 & 1.494104\tabularnewline
+\hline 
+10. & 60106 & 89881 & 1.495375 & 89919 & 1.496007\tabularnewline
+\hline 
+Average & 60277.4 & 90011.9 & 1.49329434 & 90014.1 & 1.49333083\tabularnewline
+\hline
+\end{tabular}
+\par\end{centering}
+
+\caption{Results for 10 runs with parameters N=1000, M=100.000, K=100. Command
+used: \texttt{./average.py 1000 100000 100 100}}
+
+\end{table}
+
+\par\end{center}
+\end{document}

@@ -1,0 +1,229 @@
+%% LyX 1.6.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[american,magyar]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9,latin2]{inputenc}
+\usepackage{listings}
+\usepackage{babel}
+
+\begin{document}
+
+\title{Az online lapozási problémára adott FIFO és LRU algoritmusok átlagos
+eset vizsgálata}
+
+
+\author{Csernai Kornél}
+
+\maketitle
+
+\section{Feladat}
+
+Adott $k$ méretû gyorsmemória és $n$ méretû háttérmemória (általában
+$n\gg k$). A háttérmemória használata költséges, ezért egyes részeit
+a gyorsmemóriában is eltároljuk. A rendszer folyamatosan kéréseket
+kap háttérmemóriára vonatkozóan, amelyeket ki kell elégítenie, lehetõleg
+a gyorsmemóriából. Ha a gyorsmemória betelik és egy kérésnek nem tudunk
+eleget tenni, akkor a \emph{laphiba (page fault)} lép fel. A cél a
+laphibák számának minimalizálása.
+
+Az egyes stratégiák abban különböznek egymástól, hogy a laphibák esetén
+a kért lapot melyik, már bent levõ lap helyére teszi. Az így kiválasztott
+lapot a gyorsmemóriából el kell távolítani, helyére a kért lap kerül.
+
+A feladat \emph{online}, ha az algoritmus a kéréseket egyesével kapja
+meg, és minden kérésnél rögtön, helyben dönteni kell annak sorsáról.
+Ezzel szemben az \emph{offline} feladatnál az algoritmus a teljes
+bemenettel rendelkezik.
+
+A FIFO és LRU algoritmusok az online lapozási problémát oldják meg.
+A FIFO algoritmus mindig a legrégebben felvett elemet dobja ki. Ezzel
+szemben az LRU a legrégebben használt elemet dobja ki. Az offline
+feladat esetében az optimális megoldás hatékonyan megtalálható.
+
+Ismert, hogy mindkét online algoritmus a legrosszabb esetben az offline
+optimális megoldás $k$-szorosát adják ($k$-versenyképes). Azt viszont
+nehezebb megtalálni, hogy átlagos esetben hogyan teljesítenek. Az
+átlagos eset azért érdekes, mert a gyakorlatban használt a lapcímek
+valamilyen eloszlást követnek. Most csak az egyenletes eloszlásra
+koncentrálunk. A feladatunk, hogy a két adott online algoritmust megvizsgáljuk
+empirikus átlagos eset szempontjából.
+
+
+\section{Futási környezet}
+
+A mérésekhez implementáltam a FIFO, LRU és az OPT algoritmusokat és
+elkészítettem egy szimulátor környezetet.
+
+A teszteknek a következõ paraméterei vannak:
+\begin{itemize}
+\item $k$, a gyorsmemória mérete
+\item $n$, a háttérmemória mérete
+\item $m$, a kérések száma
+\item $I=\sigma=\left\{ \sigma_{1},\ldots,\sigma_{m}\right\} $, a kérések
+sorozata
+\end{itemize}
+Minden futás az $\left\{ 1,2,\ldots,n\right\} $ kérésekkel indul,
+amely a gyorsmemóriát inicializálja. Ezek nem számítanak bele az $m$
+kérésbe. Minden további kéréshez egy-egy véletlenszámot generáltam
+egyenletes eloszlás szerint $1$ és $n$ között.
+
+Egy egyszeri mérésnél az $(k,n,m)$ paraméterek rögzítettek és következõ
+történik:
+\begin{enumerate}
+\item Véletlen sorozat generálása.
+\item Optimum megkeresése az OPT algoritmussal. Amennyiben az optimum $0$,
+újra végrehajtom az 1. lépést.
+\item Az algoritmusok lefuttatása, online szimuláció.
+\item Az egyes algoritmusok eredményeit elosztom az optimummal, ez lesz
+az algoritmus teljesítménye.
+\end{enumerate}
+Ilyen egyszeri futásokból 100 ismételt próbát teszek és veszem a teljesítmények
+átlagát, minimumát, maximumát. A \[
+P=\left\{ (k,n,m)\,\mid\,2\leq k\leq k_{max},\, k+1\leq n\leq n_{max},\ 3\leq m\leq m_{max}\right\} \]
+halmaz adja az összes futás paramétereit, tipikusan $k_{max}=99,\, n_{max}=100,\, m_{max}=100$
+konstansokkal.
+
+
+\section{Technikai részletek}
+
+A programot Python scriptnyelven, részben objektum-orientált módon
+valósítottam meg. A futtatási környezet egy interfészt biztosít, amelybe
+bármely online lapozási algoritmus beilleszthetõ. Két ilyen algoritmus
+valósítottam meg: FIFO és LRU.
+
+Az interfész legfontosabb része a \texttt{request} függvény. A keretrendszer
+a soron következõ kéréssel paraméterezi a függvényt, amelyet az algoritmus
+lefuttat, és visszaadja azt a cella indexet, amelyre kicserélné a
+kért blokkot. Ha nincs cserére szükség, akkor a megtalált blokk indexét
+kell visszaadni. A keretrendszer számontartja a gyorsmemória aktuális
+állapotát és feljegyzi a laphibák számát.
+
+A futtatókörnyezet lényege, hogy az összes $p\in P$ paramétert többször
+lefuttatja, az értékeket aggregálva. Vegyük észre, hogy különbözõ
+$p$ paraméterek felett a bemeneti sorozat nem rögzített. A környezet
+feljegyzett eredményeket fájlokban tárolja, az $m$ paraméter szerint
+csoportosítva: \verb|run_003.txt, run_004.txt|, stb. Az így készült
+fájlok soronként oszlopokat tartalmaznak, szóközzel elválasztva. Minden
+egyes sor az adott $p$ paraméter mellett kapott eredményeket tartalmazza.
+
+Az elsõ sor tartalmazza a fejléc oszlopokat:
+\begin{itemize}
+\item \emph{k}, a $k$ paraméter aktuális értéke
+\item \emph{n}, az $n$ paraméter aktuális értéke
+\item \emph{m}, az $\mbox{m}$ paraméter aktuális értéke
+\item \emph{FIFO\_avg}, a FIFO algoritmus átlagos teljesítménye
+\item \emph{FIFO\_min}, a FIFO algoritmus legjobb (minimális) teljesítménye
+\item \emph{FIFO\_max}, a FIFO algoritmus legrosszabb (maximális) teljesítménye
+\item \emph{LRU\_avg}, az LRU algoritmus átlagos teljesítménye
+\item \emph{LRU\_min}, az LRU algoritmus legjobb (minimális) teljesítménye
+\item \emph{LRU\_max}, az LRU algoritmus legrosszabb (maximális) teljesítménye
+\end{itemize}
+
+\subsection*{A megvalósítás részletei}
+
+
+\begin{lstlisting}[breaklines=true,language=Python,numbers=left]
+class FIFO(Algorithm):
+    def init(self, n, k):
+        self.k = k
+        self.store = [i + 1 for i in range(k)]
+        logger.debug(self.store)
+
+        self.lastpos = 0
+
+    def find(self, piece):
+        try:
+            pos = self.store.index(piece)
+            return pos
+        except ValueError:
+            return -1
+
+    def request(self, piece):
+        pos = self.find(piece)
+
+        if pos == -1: # piece not found, page fault
+        # FIFO behavior, changing the i%k -th  element in round i
+            drop = self.lastpos
+            self.store[drop] = piece
+            self.lastpos += 1
+            self.lastpos %= self.k
+            return drop
+        else: # piece found
+            return pos
+
+    def __str__(self):
+        return "FIFO"
+\end{lstlisting}
+
+\begin{lstlisting}[breaklines=true,language=Python,numbers=left]
+class LRU(Algorithm):
+    def init(self, n, k):
+        self.k = k
+        self.store = [i + 1 for i in range(k)]
+        self.usage = [i for i in range(k)]
+
+        # round counter
+        self.round = k - 1
+
+        self.lastpos = 0
+
+    def find(self, piece):
+        try:
+            pos = self.store.index(piece)
+            return pos
+        except ValueError:
+            return -1
+
+    def request(self, piece):
+
+        self.round += 1
+
+        pos = self.find(piece)
+
+        if pos == -1: # piece not found, page fault
+            # find the least recently used slot:
+            minpos = -1
+            mintime = self.round
+
+            for i, j in enumerate(self.usage):
+                if j < mintime: # found a new minimum
+                    minpos = i
+                    mintime = j
+
+            self.store[minpos] = piece
+            self.usage[minpos] = self.round
+            return minpos
+        else: # piece found
+            # actualize last used time for this piece
+            self.usage[pos] = self.round
+            return pos
+
+    def __str__(self):
+        return "LRU"
+\end{lstlisting}
+
+
+
+\section{Futtatás}
+
+A futtatáshoz Python értelmezõ szükséges. A következõ futtatásokat
+végeztem el:
+
+\selectlanguage{american}%
+\inputencoding{latin9}%
+\begin{center}
+\texttt{./single.py 5 20 3} \textendash{} Egyszeri, részletezett futás
+a megadott N, M, K paraméterekkel.
+\par\end{center}
+
+\begin{center}
+\texttt{./average.py 1000 100000 100 100 }\textendash{} Az utolsó
+paraméter megadja, hogy hány egyszeri futást végezzünk. Itt már nem
+részletes.
+\par\end{center}
+
+\begin{center}
+\texttt{./env.py }\textendash{} A 3. részben leírtakat végzi el.
+\par\end{center}\selectlanguage{american}
+
+\end{document}
